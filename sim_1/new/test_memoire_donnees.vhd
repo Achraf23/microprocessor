@@ -42,8 +42,8 @@ component memoire_donnees is
        input : in STD_LOGIC_VECTOR (7 downto 0);
        addr : in STD_LOGIC_VECTOR (7 downto 0);
        RW : in STD_LOGIC;
-       RST : in STD_LOGIC;
-       CLK : in STD_LOGIC;
+       RST_mem : in STD_LOGIC;
+       CLK_mem : in STD_LOGIC;
        output : out STD_LOGIC_VECTOR (7 downto 0));
  END component;
  
@@ -56,8 +56,8 @@ begin
     input => sim_in,
     addr => sim_addr,
     RW => sim_RW,
-    RST => sim_RST,
-    CLK => sim_CLK,
+    RST_mem => sim_RST,
+    CLK_mem => sim_CLK,
     output => sim_out 
     );
     
