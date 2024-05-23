@@ -51,12 +51,13 @@ begin
     process(CLK_mem) 
             variable str : string(1 to 8); -- Variable to hold string representation
     begin
-         -- Convert the array element to a string
+         -- Convert the array element to a string0
+         
+        if CLK_mem ='1' and RST_mem ='1' then 
+            mem <= (x"00", x"09", others => X"00");
+        end if;
         
         if CLK_mem ='0' then
-            if RST_mem ='0' then
-                mem <= (x"00", x"09", others => X"00");
-            end if;
             if RW='1' then
                 for i in 0 to 7 loop
                     if mem(index)(i) = '1' then

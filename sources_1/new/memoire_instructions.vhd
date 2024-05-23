@@ -43,10 +43,17 @@ type ttab is array(0 to 255) of std_logic_vector(31 downto 0);
 signal instructions: ttab;
 
 begin
-    instructions <= (x"06000533",x"00000000", x"00000000", x"00000000", x"00000000",x"06010333", x"00000000", x"00000000", x"00000000", x"00000000" , x"03020001", x"00000000",x"00000000", others => x"00000000");
-    process(CLK_ins) begin
-        if CLK_ins ='1' then
-            output <= instructions(TO_INTEGER(unsigned(addr)));
-        end if;
-    end process;
+    instructions <= (x"99999999", x"06010533", x"05000100", x"00000000", x"06020100"
+    ,x"07010133"
+    , x"00000000", x"00000000", x"00000000", x"00000000", x"00000000",x"08020100", others => x"00000000");
+--    process(CLK_ins) begin
+--        if CLK_ins ='1' then
+--            output <= instructions(TO_INTEGER(unsigned(addr)));
+--        end if;
+--    end process;
+    
+    
+    output <= instructions(TO_INTEGER(unsigned(addr)));
+
+    
 end Behavioral;
