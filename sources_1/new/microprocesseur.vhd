@@ -97,6 +97,22 @@ component buffer_pipeline is
 end component;
 
 
+component alea_file is
+ Port (li_di_a : in STD_LOGIC_VECTOR (7 downto 0);
+       li_di_b : in STD_LOGIC_VECTOR (7 downto 0);
+       li_di_c : in STD_LOGIC_VECTOR (7 downto 0);
+       di_ex_a : in STD_LOGIC_VECTOR (7 downto 0);
+       ex_mem_a : in STD_LOGIC_VECTOR (7 downto 0);
+       mem_re_a : in STD_LOGIC_VECTOR (7 downto 0);
+       li_di_op : in STD_LOGIC_VECTOR (7 downto 0);
+       di_ex_op : in STD_LOGIC_VECTOR (7 downto 0);
+       ex_mem_op : in STD_LOGIC_VECTOR (7 downto 0);
+       mem_re_op : in STD_LOGIC_VECTOR (7 downto 0);
+       alea_out : out std_logic);
+
+end component;
+
+
 signal sim_RST, sim_br_W, sim_cpt_load, sim_cpt_sens, sim_cpt_en: std_logic; 
 signal sim_br_A, sim_br_B, sim_addrW : STD_LOGIC_VECTOR (3 downto 0);
 signal sim_br_data, sim_mi_addr, sim_cpt_din, sim_cpt_dout , sim_alu_s, sim_mem_out : STD_LOGIC_VECTOR (7 downto 0);
@@ -111,17 +127,17 @@ signal sim_rw : std_logic;
 signal sim_addr_mem: STD_LOGIC_VECTOR (7 downto 0);
    
 -- ALEA --
-signal alea : std_logic:='0';
+signal alea : std_logic;
 begin
   
     ip : compteur_8bits PORT MAP (
-       CLK_cpt => CLK,
-       RST => sim_RST,
-       LOAD => sim_cpt_load,
-       SENS => sim_cpt_sens,
-       EN => sim_cpt_en,
-       Din =>sim_cpt_din,
-       Dout => sim_cpt_dout
+    CLK_cpt => CLK,
+    RST => sim_RST,
+    LOAD => sim_cpt_load,
+    SENS => sim_cpt_sens,
+    EN => sim_cpt_en,
+    Din =>sim_cpt_din,
+    Dout => sim_cpt_dout
     );
 
     my_mi : memoire_instructions PORT MAP (
@@ -162,6 +178,20 @@ begin
     output => sim_mem_out
     );
     
+    alea_ent : alea_file PORT MAP(
+    li_di_a => A_LI_DI,
+    li_di_b => B_LI_DI,
+    li_di_c => C_LI_DI,
+    di_ex_a => A_DI_EX,
+    ex_mem_a => A_EX_MEM,
+    mem_re_a => A_MEM_RE,
+    li_di_op => OP_LI_DI,
+    di_ex_op => OP_DI_EX, 
+    ex_mem_op => OP_EX_MEM, 
+    mem_re_op => OP_MEM_RE, 
+    alea_out => alea
+    );
+    
     sim_cpt_load <= '0';
     sim_cpt_en <= '1' when alea='0' else '0';
     sim_cpt_sens <= '1';
@@ -173,19 +203,6 @@ begin
     A_LI_DI <=  sim_mi_output (23 downto 16) when alea = '0';
     OP_LI_DI <=  sim_mi_output (31 downto 24) ;
     
-
-     -- 1er niveau de pipeline
---    process(CLK) begin
---        if CLK ='1' then
---            if alea = '0' then
---                sim_mi_addr <= sim_cpt_dout;
---                C_LI_DI <=  sim_mi_output (7 downto 0);
---                B_LI_DI <=  sim_mi_output (15 downto 8);
---                A_LI_DI <=  sim_mi_output (23 downto 16);
---                OP_LI_DI <=  sim_mi_output (31 downto 24);
---            end if;         
---        end if;
---    end process;
     
     -- 2eme niveau de pipeline
     process(CLK) begin
@@ -269,12 +286,6 @@ begin
         end if;
         
     end process;
-    
-    ---- GESTION DES ALEAS -----
-    alea <= '1' when (A_DI_EX = B_LI_DI and (OP_LI_DI=x"05" and OP_DI_EX=x"06")) or 
-    (A_EX_MEM = B_LI_DI and (OP_LI_DI=x"05" and OP_EX_MEM=x"06")) or
-    (A_MEM_RE = B_LI_DI and (OP_LI_DI=x"05" and OP_MEM_RE=x"06")) else '0';    
-    
     
 
 end Behavioral;
