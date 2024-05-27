@@ -282,7 +282,6 @@ begin
                     sim_br_w<='0';
              end if;    
             
-             
         end if;
         
     end process;

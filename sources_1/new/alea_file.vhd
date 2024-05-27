@@ -70,13 +70,29 @@ begin
     --- alea add / sub / mul then cop
     ((di_ex_a = li_di_b or di_ex_a = li_di_c) and (li_di_op=x"05" and (di_ex_op=x"01" or di_ex_op=x"02" or di_ex_op=x"03" ))) or 
     ((di_ex_a = li_di_b or di_ex_a = li_di_c) and (li_di_op=x"05" and (ex_mem_op=x"01" or ex_mem_op=x"02" or ex_mem_op=x"03" ))) or 
-    ((di_ex_a = li_di_b or di_ex_a = li_di_c) and (li_di_op=x"05" and (mem_re_op=x"01" or mem_re_op=x"02" or mem_re_op=x"03" )))
+    ((di_ex_a = li_di_b or di_ex_a = li_di_c) and (li_di_op=x"05" and (mem_re_op=x"01" or mem_re_op=x"02" or mem_re_op=x"03" ))) or
+    
+    --- alea afc then store
+    (di_ex_a = li_di_b and (li_di_op=x"08" and di_ex_op=x"06")) or 
+    (ex_mem_a = li_di_b and (li_di_op=x"08" and ex_mem_op=x"06")) or
+    (mem_re_a = li_di_b and (li_di_op=x"08" and mem_re_op=x"06")) or
+    
+    --- alea load then cop
+    (di_ex_a = li_di_b and (li_di_op=x"05" and di_ex_op=x"07")) or 
+    (ex_mem_a = li_di_b and (li_di_op=x"05" and ex_mem_op=x"07")) or
+    (mem_re_a = li_di_b and (li_di_op=x"05" and mem_re_op=x"07")) or
+    
+    --- alea load then add/sub/mul
+    (di_ex_a = li_di_b and ((li_di_op=x"01" or li_di_op=x"02" or li_di_op=x"03") and di_ex_op=x"07")) or 
+    (ex_mem_a = li_di_b and ((li_di_op=x"01" or li_di_op=x"02" or li_di_op=x"03") and ex_mem_op=x"07")) or
+    (mem_re_a = li_di_b and ((li_di_op=x"01" or li_di_op=x"02" or li_di_op=x"03") and mem_re_op=x"07")) or
+    
+    ---alea load then store
+    (di_ex_a = li_di_b and (li_di_op=x"08" and di_ex_op=x"07")) or 
+    (ex_mem_a = li_di_b and (li_di_op=x"08" and ex_mem_op=x"07")) or
+    (mem_re_a = li_di_b and (li_di_op=x"08" and mem_re_op=x"07"))
+   
     
     else '0'; 
     
-    --    alea <= '1' 
---    when (A_DI_EX = B_LI_DI and (OP_LI_DI=x"05" and OP_DI_EX=x"06")) or 
---    (A_EX_MEM = B_LI_DI and (OP_LI_DI=x"05" and OP_EX_MEM=x"06")) or
---    (A_MEM_RE = B_LI_DI and (OP_LI_DI=x"05" and OP_MEM_RE=x"06")) else '0';  
-
 end Behavioral;
