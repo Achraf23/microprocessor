@@ -66,8 +66,7 @@ begin
                         str(i + 1) := '0';
                     end if;
                 end loop;
-                --report "testTTTTTTTTTTTTTTEAWWWWWWW";
-                --report "MESSAGE: " & str;
+                
                 output <= mem(to_integer(unsigned(addr)));
             else
                 mem(to_integer(unsigned(addr))) <= input;                

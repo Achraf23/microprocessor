@@ -197,6 +197,7 @@ begin
     sim_cpt_sens <= '1';
     sim_RST <= RST;
     
+    --- 1er etage
     sim_mi_addr <= sim_cpt_dout when alea = '0';
     C_LI_DI <=  sim_mi_output (7 downto 0) when alea = '0';
     B_LI_DI <=  sim_mi_output (15 downto 8) when alea = '0';
@@ -224,7 +225,6 @@ begin
                 OP_DI_EX <= x"00";
                 B_DI_EX <= x"00";
                 C_DI_EX <= x"00";
-             
              end if;
         end if;
     end process;
@@ -241,10 +241,8 @@ begin
                 A_EX_MEM<=A_DI_EX;
                 OP_EX_MEM <= OP_DI_EX; 
                 B_EX_MEM<=B_DI_EX;
-             end if;    
-             
-        end if;
-        
+             end if;                
+        end if;    
     end process;
     
     -- 4eme niveau de pipeline
@@ -266,9 +264,7 @@ begin
                 B_MEM_RE<=B_EX_MEM;
             end if;
         end if;    
-    end process;
-    
-    
+    end process;    
                 
     --5eme niveau de pipeline
     process (CLK) begin 
@@ -280,10 +276,8 @@ begin
                 sim_br_data<=B_MEM_RE;
             else 
                     sim_br_w<='0';
-             end if;    
-            
-        end if;
-        
+             end if;                
+        end if;       
     end process;
     
 

@@ -90,7 +90,7 @@ begin
     ---alea load then store
     (di_ex_a = li_di_b and (li_di_op=x"08" and di_ex_op=x"07")) or 
     (ex_mem_a = li_di_b and (li_di_op=x"08" and ex_mem_op=x"07")) or
-    (mem_re_a = li_di_b and (li_di_op=x"08" and mem_re_op=x"07"))
+    (mem_re_a = li_di_b  and (li_di_op=x"08" and mem_re_op=x"07"))
    
     
     else '0'; 
