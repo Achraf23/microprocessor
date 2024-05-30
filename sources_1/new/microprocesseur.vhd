@@ -112,8 +112,8 @@ component alea_file is
 
 end component;
 
-
-signal sim_RST, sim_br_W, sim_cpt_load, sim_cpt_sens, sim_cpt_en: std_logic; 
+signal sim_cpt_load :std_logic := '0';
+signal sim_RST, sim_br_W, sim_cpt_sens, sim_cpt_en: std_logic; 
 signal sim_br_A, sim_br_B, sim_addrW : STD_LOGIC_VECTOR (3 downto 0);
 signal sim_br_data, sim_mi_addr, sim_cpt_din, sim_cpt_dout , sim_alu_s, sim_mem_out : STD_LOGIC_VECTOR (7 downto 0);
 signal OP_LI_DI, A_LI_DI, B_LI_DI, C_LI_DI: STD_LOGIC_VECTOR (7 downto 0);
@@ -128,6 +128,7 @@ signal sim_addr_mem: STD_LOGIC_VECTOR (7 downto 0);
    
 -- ALEA --
 signal alea : std_logic;
+signal test : std_logic :='0';
 begin
   
     ip : compteur_8bits PORT MAP (
@@ -192,28 +193,33 @@ begin
     alea_out => alea
     );
     
-    sim_cpt_load <= '0';
+    sim_cpt_load <= '1' when OP_LI_DI=x"09" or (OP_DI_EX=x"0a" and B_DI_EX=x"00") else '0';
     sim_cpt_en <= '1' when alea='0' else '0';
     sim_cpt_sens <= '1';
     sim_RST <= RST;
     
+    --- 1er etage
     sim_mi_addr <= sim_cpt_dout when alea = '0';
     C_LI_DI <=  sim_mi_output (7 downto 0) when alea = '0';
     B_LI_DI <=  sim_mi_output (15 downto 8) when alea = '0';
     A_LI_DI <=  sim_mi_output (23 downto 16) when alea = '0';
-    OP_LI_DI <=  sim_mi_output (31 downto 24) ;
+    OP_LI_DI <=  sim_mi_output (31 downto 24) when alea = '0';
     
+    --- handle jmp and jmf
+    sim_cpt_din <= A_LI_DI when OP_LI_DI=x"09" else
+                    A_DI_EX when OP_DI_EX=x"0a" and B_DI_EX=x"00";
     
     -- 2eme niveau de pipeline
     process(CLK) begin
         if CLK ='1' then
+            --sim_cpt_load <= '0';
             if alea = '0' then
             -- Pour COP, ADD, SOUS, MUL et STORE on link notre 2eme buffer de pipeline aux sorties du banc de registre
-                if OP_LI_DI = x"05" or OP_LI_DI = x"01" or OP_LI_DI = x"02" or OP_LI_DI = x"03" or OP_LI_DI = x"08" then                
+                if OP_LI_DI = x"05" or OP_LI_DI = x"01" or OP_LI_DI = x"02" or OP_LI_DI = x"03" or OP_LI_DI = x"08" or OP_LI_DI=x"0a" then                
                     A_DI_EX <= A_LI_DI;
                     OP_DI_EX <= OP_LI_DI;
                     B_DI_EX <= sim_br_QA;
-                    C_DI_EX <= sim_br_QB; 
+                    C_DI_EX <= sim_br_QB;             
                 else
                     A_DI_EX <= A_LI_DI;
                     OP_DI_EX <= OP_LI_DI;
@@ -224,7 +230,6 @@ begin
                 OP_DI_EX <= x"00";
                 B_DI_EX <= x"00";
                 C_DI_EX <= x"00";
-             
              end if;
         end if;
     end process;
@@ -241,10 +246,8 @@ begin
                 A_EX_MEM<=A_DI_EX;
                 OP_EX_MEM <= OP_DI_EX; 
                 B_EX_MEM<=B_DI_EX;
-             end if;    
-             
-        end if;
-        
+             end if;                
+        end if;    
     end process;
     
     -- 4eme niveau de pipeline
@@ -266,9 +269,7 @@ begin
                 B_MEM_RE<=B_EX_MEM;
             end if;
         end if;    
-    end process;
-    
-    
+    end process;    
                 
     --5eme niveau de pipeline
     process (CLK) begin 
@@ -280,10 +281,8 @@ begin
                 sim_br_data<=B_MEM_RE;
             else 
                     sim_br_w<='0';
-             end if;    
-            
-        end if;
-        
+             end if;                
+        end if;       
     end process;
     
 
